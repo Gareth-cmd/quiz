@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>General Knowledge Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            margin: 20px 0;
+        }
+        #quiz-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+        .options li {
+            margin: 10px 0;
+        }
+        .options button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .options button:hover {
+            background: #0056b3;
+        }
+        #score {
+            font-size: 20px;
+            margin: 20px;
+        }
+        #start-container {
+            margin: 50px auto;
+        }
+        #start-container input {
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px;
+            width: 200px;
+        }
+        #start-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #start-container button:hover {
+            background: #1e7e34;
+        }
+        /* Additional styling for the reset button */
+        #score button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #ffc107;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        #score button:hover {
+            background: #e0a800;
+        }
+    </style>
+</head>
+<body>
+    <h1>Metal Detecting Quiz</h1>
+    <div id="start-container">
+        <label for="playerName">Enter your name: </label>
+        <input type="text" id="playerName" placeholder="Your Name">
+        <button onclick="startQuiz()">Start Quiz</button>
+    </div>
+    <div id="quiz-container" style="display: none;">
+        <p class="question"></p>
+        <ul class="options"></ul>
+    </div>
+    <div id="score" style="display: none;"></div>
+
+    <script>
+        // Total number of questions per quiz
+        const TOTAL_QUESTIONS = 15;
+
+        // Pool of quiz questions (ensure all 100 questions are properly formatted within the array)
+        const questions = [
+            {
+                question: "What is the primary purpose of a metal detector?",
+                options: [
+                    "Detecting plastic objects",
+                    "Detecting metallic objects",
+                    "Detecting wooden objects"
+                ],
+                correct: 1 // Index of the correct answer
+            },
+            {
+                question: "Who is credited with inventing the first practical metal detector?",
+                options: [
+                    "Alexander Graham Bell",
+                    "Thomas Edison",
+                    "Nikola Tesla"
+                ],
+                correct: 0
+            },
+            {
+                question: "In which year was the first metal detector invented?",
+                options: [
+                    "1874",
+                    "1881",
+                    "1890"
+                ],
+                correct: 1
+            },
+            {
+                question: "What is 'ground balancing' in metal detecting?",
+                options: [
+                    "Adjusting the detector to ignore mineral content in the soil",
+                    "Calibrating the detector to detect only gold",
+                    "Setting the detector to a specific depth"
+                ],
+                correct: 0
+            },
+            {
+                question: "Which metal is most commonly detected by metal detectors?",
+                options: [
+                    "Gold",
+                    "Iron",
+                    "Silver"
+                ],
+                correct: 1
+            },
+            {
+                question: "What does the term 'discrimination' refer to in metal detecting?",
+                options: [
+                    "Differentiating between different types of metals",
+                    "Ignoring all metal signals",
+                    "Detecting only large objects"
+                ],
+                correct: 0
+            },
+            {
+                question: "Which frequency range is generally better for detecting small objects like gold nuggets?",
+                options: [
+                    "Low frequency (1-4 kHz)",
+                    "Medium frequency (5-15 kHz)",
+                    "High frequency (16-100 kHz)"
+                ],
+                correct: 2
+            },
+            {
+                question: "What is the purpose of a 'pinpointer' in metal detecting?",
+                options: [
+                    "To locate the exact position of a target within a small area",
+                    "To increase the depth range of the metal detector",
+                    "To identify the type of metal detected"
+                ],
+                correct: 0
+            },
+            {
+                question: "Which of the following is a common technique to search for metal objects underwater?",
+                options: [
+                    "Beachcombing",
+                    "Magnet fishing",
+                    "Dowsing"
+                ],
+                correct: 1
+            },
+            {
+                question: "What does 'VDI' stand for in metal detecting terminology?",
+                options: [
+                    "Visual Depth Indicator",
+                    "Visual Discrimination Indicator",
+                    "Visual Display Indicator"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which type of coil provides greater depth but less sensitivity to small objects?",
+                options: [
+                    "Concentric coil",
+                    "Double-D coil",
+                    "Large coil"
+                ],
+                correct: 2
+            },
+            {
+                question: "What is the recommended swing speed for most metal detectors?",
+                options: [
+                    "Fast and rapid",
+                    "Slow and steady",
+                    "Irregular and varied"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which soil condition can cause false signals in metal detecting?",
+                options: [
+                    "Dry sand",
+                    "Highly mineralized soil",
+                    "Wet clay"
+                ],
+                correct: 1
+            },
+            {
+                question: "What is 'notch discrimination' in metal detectors?",
+                options: [
+                    "Ignoring signals from specific types of metals",
+                    "Detecting only precious metals",
+                    "Adjusting the depth of detection"
+                ],
+                correct: 0
+            },
+            {
+                question: "Which of the following is a recommended practice when metal detecting on private property?",
+                options: [
+                    "Detecting without permission",
+                    "Leaving holes unfilled",
+                    "Obtaining landowner's permission"
+                ],
+                correct: 2
+            },
+            {
+                question: "What is the term for unwanted metal objects like nails and pull-tabs found while detecting?",
+                options: [
+                    "Relics",
+                    "Trash",
+                    "Artifacts"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which of the following can help reduce interference from power lines while metal detecting?",
+                options: [
+                    "Using a larger coil",
+                    "Lowering the sensitivity",
+                    "Increasing the discrimination"
+                ],
+                correct: 1
+            },
+            {
+                question: "What is the term for the area covered by a metal detector's search coil?",
+                options: [
+                    "Detection field",
+                    "Search zone",
+                    "Coil radius"
+                ],
+                correct: 0
+            },
+            {
+                question: "Which metal is known to cause the most interference due to its magnetic properties?",
+                options: [
+                    "Copper",
+                    "Aluminum",
+                    "Iron"
+                ],
+                correct: 2
+            },
+            {
+                question: "What is the recommended action when a metal detector gives a weak signal?",
+                options: [
+                    "Ignore the signal",
+                    "Increase the sensitivity and re-scan",
+                    "Decrease the sensitivity and re-scan"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which of the following can affect a metal detector's performance?",
+                options: [
+                    "Temperature changes",
+                    "Battery level",
+                    "Both a and b"
+                ],
+                correct: 2
+            },
+            {
+                question: "What is 'masking' in metal detecting?",
+                options: [
+                    "When a large metal object hides a smaller one",
+                    "When ground minerals hide metal objects",
+                    "When one metal object hides another due to proximity"
+                ],
+                correct: 2
+            },
+            {
+                question: "What is the primary purpose of a metal detector's discrimination feature?",
+                options: [
+                    "To increase detection depth",
+                    "To differentiate between types of metals",
+                    "To adjust sensitivity levels"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which of the following is a recommended practice when metal detecting in public areas?",
+                options: [
+                    "Leaving trash targets behind",
+                    "Filling in all holes after digging",
+                    "Ignoring local regulations"
+                ],
+                correct: 1
+            },
+            {
+                question: "What does 'VDI' stand for in metal detecting terminology?",
+                options: [
+                    "Visual Depth Indicator",
+                    "Visual Discrimination Indicator",
+                    "Variable Detection Index"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which type of metal detector is generally more effective in saltwater environments?",
+                options: [
+                    "Very Low Frequency (VLF)",
+                    "Pulse Induction (PI)",
+                    "Beat Frequency Oscillation (BFO)"
+                ],
+                correct: 1
+            },
+            {
+                question: "What is the effect of highly mineralized soil on metal detecting?",
+                options: [
+                    "Enhances detection depth",
+                    "Causes false signals",
+                    "Has no effect"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which metal is commonly associated with 'hot rocks' that cause interference in metal detecting?",
+                options: [
+                    "Iron",
+                    "Gold",
+                    "Aluminum"
+                ],
+                correct: 0
+            },
+            {
+                question: "What is the purpose of a 'pinpointer' in metal detecting?",
+                options: [
+                    "To increase detection depth",
+                    "To locate the exact position of a target",
+                    "To identify the type of metal detected"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which of the following can help reduce electromagnetic interference while metal detecting?",
+                options: [
+                    "Increasing sensitivity",
+                    "Using a smaller search coil",
+                    "Operating near power lines"
+                ],
+                correct: 1
+            },
+            {
+                question: "What is the recommended action if your metal detector becomes unstable due to electromagnetic interference?",
+                options: [
+                    "Increase sensitivity",
+                    "Decrease sensitivity",
+                    "Change to a higher frequency"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which feature allows a metal detector to identify the probable type of metal detected?",
+                options: [
+                    "Sensitivity adjustment",
+                    "Target ID",
+                    "Ground balance"
+                ],
+                correct: 1
+            },
+            {
+                question: "What is the term for the unwanted signals caused by mineralized ground?",
+                options: [
+                    "Ground noise",
+                    "False positives",
+                    "Hot rocks"
+                ],
+                correct: 0
+            },
+            {
+                question: "Which of the following is a non-ferrous metal commonly detected?",
+                options: [
+                    "Iron",
+                    "Aluminum",
+                    "Steel"
+                ],
+                correct: 1
+            },
+            {
+                question: "What is the purpose of a 'coil cover' in metal detecting equipment?",
+                options: [
+                    "To enhance detection depth",
+                    "To protect the search coil from damage",
+                    "To reduce electromagnetic interference"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which type of metal detector is best suited for underwater use?",
+                options: [
+                    "Very Low Frequency (VLF)",
+                    "Pulse Induction (PI)",
+                    "Beat Frequency Oscillation (BFO)"
+                ],
+                correct: 1
+            },
+            {
+                question: "What does 'threshold' refer to in metal detecting?",
+                options: [
+                    "The maximum depth of detection",
+                    "The continuous background hum",
+                    "The size of the detected object"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which of the following can cause interference with a metal detector's operation?",
+                options: [
+                    "High-voltage power lines",
+                    "Wet grass",
+                    "Cloudy weather"
+                ],
+                correct: 0
+            },
+            {
+                question: "What is the recommended swing speed for most metal detectors?",
+                options: [
+                    "Fast and rapid",
+                    "Slow and steady",
+                    "Irregular and varied"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which of the following metals is least likely to be detected by a standard metal detector?",
+                options: [
+                    "Aluminum",
+                    "Lead",
+                    "Stainless steel"
+                ],
+                correct: 2
+            },
+            {
+                question: "What is the term for adjusting a metal detector to ignore certain types of metal?",
+                options: [
+                    "Sensitivity",
+                    "Discrimination",
+                    "Threshold"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which component of a metal detector emits the electromagnetic field?",
+                options: [
+                    "Control box",
+                    "Search coil",
+                    "Shaft"
+                ],
+                correct: 1
+            },
+            {
+                question: "What is the ideal motion for swinging a metal detector?",
+                options: [
+                    "Circular motion",
+                    "Side-to-side motion",
+                    "Up-and-down motion"
+                ],
+                correct: 1
+            },
+            {
+                question: "Which of the following practices is important for responsible metal detecting?",
+                options: [
+                    "Leaving found items in place",
+                    "Filling in all holes after digging",
+                    "Ignoring local laws and regulations"
+                ],
+                correct: 1
+            }
+            // Ensure all questions are included and properly formatted
+        ];
+
+        // Initialize variables
+        let playerName = "";
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedQuestions = [];
+
+        // Function to start the quiz
+        function startQuiz() {
+            playerName = document.getElementById("playerName").value.trim();
+            if (playerName === "") {
+                alert("Please enter your name to start the quiz.");
+                return;
+            }
+
+            // Reset variables
+            currentQuestionIndex = 0;
+            score = 0;
+
+            // Select 15 random questions using Fisher-Yates Shuffle
+            selectedQuestions = getRandomQuestions(questions, TOTAL_QUESTIONS);
+
+            // Hide start container and show quiz container
+            document.getElementById("start-container").style.display = "none";
+            document.getElementById("quiz-container").style.display = "block";
+
+            // Display the first question
+            showQuestion();
+        }
+
+        // Function to get random questions using Fisher-Yates Shuffle
+        function getRandomQuestions(pool, num) {
+            if (num > pool.length) {
+                console.error("Not enough questions in the pool to select from.");
+                return pool;
+            }
+
+            // Create a copy of the pool to avoid mutating the original array
+            let shuffled = pool.slice();
+
+            // Fisher-Yates Shuffle Algorithm
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+
+            // Return the first 'num' questions
+            return shuffled.slice(0, num);
+        }
+
+        // Function to display the current question
+        function showQuestion() {
+            if (currentQuestionIndex >= selectedQuestions.length) {
+                endQuiz();
+                return;
+            }
+
+            const questionData = selectedQuestions[currentQuestionIndex];
+            document.querySelector(".question").textContent = `${currentQuestionIndex + 1}. ${questionData.question}`;
+
+            const optionsContainer = document.querySelector(".options");
+            optionsContainer.innerHTML = "";
+
+            questionData.options.forEach((option, index) => {
+                const li = document.createElement("li");
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.onclick = () => handleOptionClick(index);
+                li.appendChild(button);
+                optionsContainer.appendChild(li);
+            });
+        }
+
+        // Function to handle option click
+        function handleOptionClick(selectedIndex) {
+            const currentQuestion = selectedQuestions[currentQuestionIndex];
+            if (selectedIndex === currentQuestion.correct) {
+                score++;
+            }
+            currentQuestionIndex++;
+            showQuestion();
+        }
+
+        // Function to end the quiz and display the score
+        function endQuiz() {
+            document.getElementById("quiz-container").style.display = "none";
+            const scoreDiv = document.getElementById("score");
+            scoreDiv.style.display = "block";
+
+            const percentage = Math.round((score / selectedQuestions.length) * 100);
+            scoreDiv.innerHTML = `
+                <p>Well done, ${playerName}! Your final score is ${percentage}% (${score} out of ${selectedQuestions.length}).</p>
+                <button onclick="resetQuiz()">Restart Quiz</button>
+            `;
+        }
+
+        // Function to reset the quiz
+        function resetQuiz() {
+            // Reset variables
+            currentQuestionIndex = 0;
+            score = 0;
+            selectedQuestions = [];
+
+            // Hide score and show start container
+            document.getElementById("score").style.display = "none";
+            document.getElementById("start-container").style.display = "block";
+
+            // Clear the player's name input
+            document.getElementById("playerName").value = "";
+        }
+    </script>
+</body>
+</html>
